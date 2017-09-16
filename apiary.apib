@@ -1,0 +1,381 @@
+FORMAT: 1A
+HOST: http://62.109.12.233/v1
+
+# Investments API
+* RESTful JSON API, media type: `application/json`
+* Тело запроса: JSON
+* Тело ответа: JSON
+* Даты: [ISO 8601](https://www.w3.org/TR/NOTE-datetime), формат: `2015-10-16T19:20:30+01:00`
+
+
+## Ошибки
+
+Пример ошибки.
+
+        HTTP/1.1 400 Bad Request
+        Content-Type: application/json
+        
+        {
+            "status": 400,
+            "error": {
+                "code": "wrong_params",
+                "title": "Invalid limit value"
+            }
+        }
+      
+        
+## Ответ 304 Not Modified
+
+Если в кеше клиента уже есть документ, то сервер отдаст статус код 304 Not Modified для ускорения ответа и сокращения передаваемого трафика между клиентом и сервером
+
+
+## Лимитер запросов (в будущей реализация)
+
+Сервер может ограничивать клиентов в количестве запросов, отдавая ошибку с кодом `429`, [RFC 6585](https://tools.ietf.org/html/rfc6585#section-4).
+
+    HTTP/1.1 429 Too Many Requests
+    Content-Type: application/json
+
+    {
+        "status": 429,
+        "error": {
+            "code": "too_many_requests",
+            "title": "Попридержи коней"
+        }
+    }
+    
+
+## Аунтификация
+Все запросы, кроме раздела [аунтификация](/#reference/2/1) выполняются только при предъявлении токена.
+Токен создается при [логинизации](/#reference/2/2)
+
+Нужно на каждый запрос к API отправлять токен в виде HTTP Header `Authorization: Bearer xxxxxxx`.
+Токен можно также отправлять в виде HTTP Cookie с именем `atoken`. Кука имеет меньший приоритет.
+
+Без токена все запросы API будут возвращать 401 ошибку.
+
+    HTTP/1.1 401 Unauthorized
+    Content-Type: application/json
+
+    {
+        "status": 401,
+        "message": "Unauthorized"
+    }
+    
+    
+## Технические аспекты
+Чтобы соранить типы данных передаваемых значений, формат обмена данных между клиентом и сервером (и обратно) - JSON (application/json)
+Данные закодированные в формат application/x-www-form-urlencoded будут откланенны, сервер вернет ошибку.    
+
+# Group Словари
+
+## Регионы [/regions/]
+
++ Attributes (object)
+    + id: '597ac39f0fea88870761a672' (string, required)
+    + name: Самарская область (string, required)
+
+
+### Список регионов [GET]
+
++ Request (application/json)
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + data (array[Регионы])
+  
+    
+### Создать [POST]
++ Attributes (object)
+    + name: "Московская область" (string, required)
+        
++ Request (application/json)
+
+        {
+            "name": "Московская область"
+        }
+        
++ Response 201 (application/json)
+
+
+### Удалить [DELETE /regions/{id}/]
++ Parameters
+    + id (required, string, `597df7a1e78622497b404a35`)
+    
++ Response 204 (application/json)
+    
+    
+        
+## Хобби [/hobbies/]
++ Attributes (object)
+    + id: '597ac39f0fea88870761a672' (string, required)
+    + name: Музыка (string, required)
+
+
+### Список хобби [GET]
+
++ Request (application/json)
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + data (array[Хобби])
+    
+        
+### Создать [POST]
++ Attributes (object)
+    + name: "Авто" (string, required)
+        
++ Request (application/json)
+
+        {
+            "name": "Авто"
+        }
+        
++ Response 201 (application/json)
+    
+        
+### Удалить [DELETE /hobbies/{id}/]
++ Parameters
+    + id (required, string, `597df7a1e78622497b404a35`)
+    
++ Response 204 (application/json)
+
+
+
+## Отрасли [/industries/]
++ Attributes (object)
+    + id: '597ac39f0fea88870761a672' (string, required)
+    + name: Машиностроение (string, required)
+
+
+### Список отраслей [GET]
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + data (array[Отрасли])
+ 
+ 
+### Создать [POST]
++ Attributes (object)
+    + name: "Промышленность" (string, required)
+        
++ Request (application/json)
+
+        {
+            "name": "Промышленность"
+        }
+        
++ Response 201 (application/json)
+ 
+    
+### Удалить [DELETE /industries/{id}/]
++ Parameters
+    + id (required, string, `597df7a1e78622497b404a35`)
+    
++ Response 204 (application/json)
+
+
+
+# Group Пользователи
+
+## Пользователи [/users]
++ Attributes (object)
+    + firstName: Иван (string, required) - Имя
+    + lastName: Иванов (string, required) - Фамилия
+    + midName: Сергеевич (string, required) - Отчество
+    + photoUrl: https://some.cdn.ru/profile_1.jpg (string) - Фото
+    + photo: data:image/jpeg;base64,/9j/4AAQSkZJRgxxx (string) - используется только для загрузки фото, имеет приоритет над  (api не отдает это поле)
+    + sex: 1 (enum[number]) - пол
+        + 1 (number) - мужской
+        + 2 (number) - женский
+    + famStatus (enum[number]) - Семейное положение
+        + 1 (number) - Холост
+        + 2 (number) - Женат
+        + 3 (number) - ... (требуется уточнение доменной области)
+    + bdate: `2017-08-03` (string) - Дата рождения
+    + email: ivan@ivanov.ru (string) - Email
+    + tel: 8999999999 (number, required) - Телефон
+    + addr (object)
+        + city: Москва (string, required) - Город
+        + country: Россия (string) - Страна
+    + langs (array) - Языки
+        + ru
+        + en
+    + edu (array) - Образование
+        + (object)
+            + name: МГУ (string, required) - Название заведения
+            + comYear: 2003 (string, required) - Год окончания
+            + fac: ИТ (string) - факультет/специальность
+    + typeId: 1 (enum[number], required) - Тип пользователя
+        + 1 (number) - IN=INVESTOR=Инвестор: вложение финансовых ресурсов
+        + 2 (number) - SI=SOINVESTOR=Соинвестор: долевое участие в инвестировании
+        + 3 (number) - NI=NOVATOR=Новатор/изобретатель: внедрение или продажа патента на изобретение
+        + 4 (number) - BP=SELLER_BUISNESS_PRODUCT=Продавец бизнес-продуктов (в т.ч. посредники и агенты): инвестиционное предложение бизнес-продукта
+        + 5 (number) - SP=PROVIDER=Поставщик: поставка товаров или услуг
+        + 6 (number) - BW=BUSINESS_WOMAN=Бизнес-леди: поиск выгодных предложений для реализации бизнес идеи
+        + 7 (number) - PM=Проектант: предложение проектов к внедрению или разработка по ТЗ
+        + 8 (number) - UP=UNEMPLOYED=Нетрудоустроенный: поиск вакансий на место работы
+        + 9 (number) - BE=EMPLOYER=Работодатель: поиск специалистов в требуемой отрасли
+        + 10 (number) - HR=Кадровик: подбор персонала
+        + 11 (number) - LA=Эксперт: консультационные услуги в заданной области
+        + 12 (number) - VI=VIEWER=Зритель: установление деловых контактов, изучение их деятельности
+    + hobby (array[Хобби, Хобби]) - Хобби
+    + work (object) - Место работы
+        + name: МГУ (string) - Название компании
+        + amount: 17 (number) - стаж в годах
+    + about: дополнительная информация (string) - Доп инфа
+        
+    
+### Список пользователей [GET]
+        
++ Response 200 (application/json)
+    + Attributes (object)
+        + data (array[Пользователи])
+
+
+### Обновить [PUT]
+
++ Request (application/json)
+
+    + Attributes (Пользователи)
+        
++ Response 200 (application/json)
+
+### Удалить [DELETE /users/{id}/]
++ Parameters
+    + id (required, string, `597df7a1e78622497b404a35`)
+    
++ Response 204 (application/json)
+
+
+# Group Аунтификация
+
+## Регистрация [/register/]
+В случае успеха будет создана учетная запись и на указанный телефон придет пароль для входа
+
+### По телефону [POST]
+
++ Request (application/json)
+
+        {
+            "typeId": 1,
+            "firstName": "Иван",
+            "lastName": "Иванов",
+            "langs": ["ru"],
+            "tel": 89273729109
+        }
+
++ Response 201 (application/json)
+
+## Восстановление [/recovery/]
+
+### По телефону [POST]
+На телефон придет код сброса пароля
+
++ Request (application/json)
+
+        {
+            "tel": 89279999999
+        }
+        
++ Response 201 (application/json)
+
+### По коду восстановления [GET /recovery/?code={code}]
+Передается код сброса пароля. Новый пароль придет в смс
+
++ Parameters
+    + code (required, string, `k#Jk4b5032;kbhf`)
+        
++ Response 200 (application/json)
+
+
+## Аунтификация [/login/]
+
+### По телефону [POST]
++ Request (application/json)
+
+        {
+            "password": "sddf3sad3#k4nk",
+            "tel": 89279999999
+        }
+
++ Response 201 (application/json)
+    + Attributes (object)
+        + data (object)
+            + token: asdjkakhkadlksadjklj3k.sadkh3k (string) - Токен доступа к API
+
+
+# Group Друзья/Подписчики
+
+## Подписчики [/friends]
+
+### Список друзей [GET]
+        
++ Response 200 (application/json)
+    
+    + Attributes (object)
+        + data (array[Пользователи])
+
+### Список подписчиков [GET /subsribers]
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + data (array[Пользователи])
+        
+### Список запросов в друзья [GET /subsribers?status=1]
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + data (array[Пользователи])
+
+
+### Запросить дружбу [POST /friends/{fuid}]
+
++ Response 201 (application/json)
+
+
+### Подтвердить/отклонить дружбу [PUT /friends/{fuid}]
+
+2: подтвердить дружбу
+3: отклонить дружбу / оставить в подписчиках
+
++ Request (application/json)
+
+        {
+            "status": 2,
+        }
+        
++ Response 200 (application/json)
+
+### Удалить друга [DELETE /friends/{fuid}]
++ Parameters
+    + fuid (required, string, `597df7a1e78622497b404a35`)
+    
++ Response 204 (application/json)
+
+
+
+## Избранные [/favorites]
+
+### Избранные контакты [GET]
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + data (array[Пользователи])
+        
+### Добавить в избранные [POST]
+
++ Request (application/json)
+
+        {
+            "uid": "597df7a1e78622497b404a35"
+        }
+
++ Response 201 (application/json)
+
+### Удалить из избранного [DELETE /favorites/{uid}]
+
++ Parameters
+    + uid (required, string, `597df7a1e78622497b404a35`)
+    
++ Response 204 (application/json)
