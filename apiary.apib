@@ -232,6 +232,15 @@ HOST: http://62.109.12.233/v1
     + Attributes (object)
         + data (array[Пользователи])
 
+### Пользователя [GET /users/{id}/]
+
++ Parameters
+    + id (required, string, `597df7a1e78622497b404a35`)
+    
++ Response 200 (application/json)
+    + Attributes (object)
+        + data (Пользователи)
+
 
 ### Обновить [PUT]
 
@@ -250,7 +259,7 @@ HOST: http://62.109.12.233/v1
 
 # Group Аунтификация
 
-## Регистрация [/register/]
+## Регистрация [/registration/]
 В случае успеха будет создана учетная запись и на указанный телефон придет пароль для входа
 
 ### По телефону [POST]
@@ -261,7 +270,7 @@ HOST: http://62.109.12.233/v1
             "typeId": 1,
             "firstName": "Иван",
             "lastName": "Иванов",
-            "langs": ["ru"],
+            "langs": "ru",
             "tel": 89273729109
         }
 
