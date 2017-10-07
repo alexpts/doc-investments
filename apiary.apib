@@ -240,9 +240,15 @@ HOST: http://62.109.12.233/v1
 + Response 200 (application/json)
     + Attributes (object)
         + data (Пользователи)
+        
+### Свой профиль [GET /users/me/]
+    
++ Response 200 (application/json)
+    + Attributes (object)
+        + data (Пользователи)
 
 
-### Обновить [PUT]
+### Обновить [PATCH]
 
 + Request (application/json)
 
@@ -312,7 +318,7 @@ HOST: http://62.109.12.233/v1
     + Attributes (object)
         + data (object)
             + token: asdjkakhkadlksadjklj3k.sadkh3k (string) - Токен доступа к API
-
+            + uid: a304330312303 (string) - userId
 
 # Group Друзья/Подписчики
 
