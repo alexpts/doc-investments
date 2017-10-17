@@ -248,7 +248,9 @@ HOST: http://62.109.12.233/v1
         + data (Пользователи)
 
 
-### Обновить [PATCH]
+### Частично обновить [PATCH /users/{id}/]
++ Parameters
+    + id (required, string, `597df7a1e78622497b404a35`)
 
 + Request (application/json)
 
@@ -394,3 +396,39 @@ HOST: http://62.109.12.233/v1
     + uid (required, string, `597df7a1e78622497b404a35`)
     
 + Response 204 (application/json)
+
+
+
+## Сообщения [/messages]
++ Attributes (object)
+    + id: 597df7a1e78622497b404a35 (string, required)
+    + fuid: 597df7a1e78622497b404a35 (string, required) - From uid
+    + tuid: 597df7a1e78622497b404a35 (string, required) - To uid
+    + message: привет (string) - сообщение
+    + date: `2017-08-03 14:10:03.000Z` (string) - Дата сообщения
+    
+### Список диалогов с последним сообщением [GET]
+
++ Response 200 (application/json)
+    + Attributes (object)
+        + data (array[Сообщения])
+        
+        
+### Переписка с пользователем [GET /messages/{uid}]
++ Parameters
+    + uid (required, string, `597df7a1e78622497b404a35`)
+    
++ Response 200 (application/json)
+    + Attributes (object)
+        + data (array[Сообщения])
+        
+### Добавить сообщение в диалог [POST]
+
++ Request (application/json)
+
+        {
+            "tuid": "597df7a1e78622497b404a35",
+            "message": "Привет, как дела!"
+        }
+
++ Response 201 (application/json)
